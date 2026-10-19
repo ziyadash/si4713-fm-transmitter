@@ -1,6 +1,6 @@
 # Bluetooth FM transmitter
 
-Phone streams music over Bluetooth A2DP to an ESP32 (original WROOM-32). The ESP32 decodes it, feeds a DAC, and a Si4713 broadcasts it on FM. A 20x4 LCD shows status. Target: interview demo on Wed 2026-10-21.
+Phone streams music over Bluetooth A2DP to an ESP32 (original WROOM-32). The ESP32 decodes it, feeds a DAC, and a Si4713 broadcasts it on FM. A 20x4 LCD shows status.
 
 - `firmware/fm_transmitter/` - current firmware (arduino-cli sketch), see Code layout below.
 - `si4713_test/` - old ESP32-C5 bring-up sketch, kept for reference only.
