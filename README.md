@@ -7,9 +7,9 @@ Phone streams music over Bluetooth A2DP to an ESP32 (original WROOM-32). The ESP
 
 ## Schematic
 
-![Hand-drawn schematic of the Bluetooth FM transmitter](images/circuit%20schematic.jpg)
+![Hand-drawn schematic of the Bluetooth FM transmitter](images/circuit_schematic.jpg)
 
-Hand-drawn wiring sketch: ESP32, Si4713 and the 20x4 LCD. It draws the LCD on the same I2C bus as the Si4713; the firmware as built gives the LCD its own bus on D13/D14 (see Pins below). The two audio lines, D25 to RIN and D26 to LIN, each go through a 220k series resistor.
+Hand-drawn wiring sketch: The two audio lines, D25 to RIN and D26 to LIN, each go through a 220k series resistor.
 
 ## What the LCD shows
 
