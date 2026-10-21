@@ -16,6 +16,9 @@ static RadioService radio(chip);
 static Lcd lcdDevice(Wire1, LCD_COLS, LCD_ROWS);
 static Display display(lcdDevice);
 static Button lcdButton(PIN_BTN_LCD);
+static BtState btState = BtState::Disconnected;
+static uint32_t lastLevelLogMs = 0;
+static constexpr uint32_t AUDIO_LEVEL_LOG_MS = 2000;
 
 // "Artist - Title" for RadioText, or whichever half we have.
 static void nowPlayingText(const TrackInfo &t, char *out, size_t size) {
@@ -32,9 +35,19 @@ static const char *stateName(BtState s) {
   }
 }
 
+// While streaming, report the Si4713's audio input level every few seconds. It shows whether
+// sound actually reaches the chip: near -50 dBFS means silence, a healthy signal is well above.
+static void logAudioLevel() {
+  if (btState != BtState::Streaming || millis() - lastLevelLogMs < AUDIO_LEVEL_LOG_MS) return;
+  lastLevelLogMs = millis();
+  Si4713AsqStatus asq;
+  if (chip.readAsq(asq)) Serial.printf("Audio in-level %d dBFS%s\n", asq.inLevel, asq.overmod ? " OVERMOD" : "");
+}
+
 static void handleBluetoothEvents() {
   BtState state;
   if (btAudioTakeStateChange(state)) {
+    btState = state;
     Serial.printf("Bluetooth: %s\n", stateName(state));
     display.showBluetooth(state);
   }
@@ -76,6 +89,7 @@ void appSetup() {
 void appLoop() {
   radio.tick();
   handleBluetoothEvents();
+  logAudioLevel();
   display.tick();
   if (lcdButton.pressed()) {
     display.togglePower();
