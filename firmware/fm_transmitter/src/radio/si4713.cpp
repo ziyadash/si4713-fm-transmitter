@@ -199,6 +199,11 @@ bool Si4713::updateModulation() {
          setProperty(PROP_TX_COMPONENT_ENABLE, components);
 }
 
+bool Si4713::readModulation(uint16_t &components, uint16_t &audioDeviation) {
+  return getProperty(PROP_TX_COMPONENT_ENABLE, components) &&
+         getProperty(PROP_TX_AUDIO_DEVIATION, audioDeviation);
+}
+
 bool Si4713::setPreemphasis(bool us50) {
   return setProperty(PROP_TX_PREEMPHASIS, us50 ? 1 : 0);
 }

@@ -11,9 +11,15 @@ bool RadioService::begin(uint16_t freq, const char *stationName) {
 
 bool RadioService::bringUp() {
   if (!_radio.begin() || !_radio.tune(_freq)) return false;
-  if (!_radio.hasRds()) return true;
-  return _radio.beginRds(RDS_PI_CODE) && _radio.setRdsStationName(_station) &&
-         _radio.setRdsText(_text);
+  bool ok = true;
+  if (_radio.hasRds()) {
+    ok = _radio.beginRds(RDS_PI_CODE) && _radio.setRdsStationName(_station) && _radio.setRdsText(_text);
+  }
+  uint16_t components, deviation;
+  if (_radio.readModulation(components, deviation)) {
+    Serial.printf("Modulation: components 0x%04X, audio deviation %u kHz x10\n", components, deviation);
+  }
+  return ok;
 }
 
 bool RadioService::healthy() {

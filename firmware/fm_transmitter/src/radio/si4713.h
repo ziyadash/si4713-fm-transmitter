@@ -64,6 +64,9 @@ class Si4713 {
   bool setRdsStationName(const char *name);
   bool setRdsText(const char *text);
 
+  // What the chip is actually set to (for logging): multiplex components mask and audio deviation.
+  bool readModulation(uint16_t &components, uint16_t &audioDeviation);
+
   bool setProperty(uint16_t prop, uint16_t value);
   bool getProperty(uint16_t prop, uint16_t &value);
   bool powerDown();
