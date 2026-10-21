@@ -5,6 +5,7 @@
 #include "AudioTools.h"
 #include "BluetoothA2DPSink.h"
 #include "bt_audio.h"
+#include "i2s_output.h"
 #include "../util/utils.h"
 
 namespace {
@@ -14,7 +15,7 @@ constexpr uint32_t TRACK_SETTLE_MS = 400;
 #if AUDIO_BACKEND == AUDIO_BACKEND_INTERNAL_DAC
 AnalogAudioStream audioOut;
 #else
-I2SStream audioOut;
+I2sOutput audioOut;
 #endif
 BluetoothA2DPSink a2dp(audioOut);
 A2DPNoVolumeControl fixedVolume(A2DP_FIXED_VOLUME);
@@ -44,11 +45,21 @@ void setState(BtState next) {
 void onConnectionState(esp_a2d_connection_state_t s, void *) {
   if (s == ESP_A2D_CONNECTION_STATE_CONNECTED) setState(BtState::Connected);
   else if (s == ESP_A2D_CONNECTION_STATE_DISCONNECTED) setState(BtState::Disconnected);
+#if AUDIO_BACKEND == AUDIO_BACKEND_I2S
+  if (s == ESP_A2D_CONNECTION_STATE_DISCONNECTED) audioOut.stop();
+#endif
 }
 
 void onAudioState(esp_a2d_audio_state_t s, void *) {
   setState(s == ESP_A2D_AUDIO_STATE_STARTED ? BtState::Streaming : BtState::Connected);
+#if AUDIO_BACKEND == AUDIO_BACKEND_I2S
+  if (s != ESP_A2D_AUDIO_STATE_STARTED) audioOut.stop();
+#endif
 }
+
+#if AUDIO_BACKEND == AUDIO_BACKEND_I2S
+void onSampleRate(uint16_t rate) { audioOut.setSampleRate(rate); }
+#endif
 
 void onMetadata(uint8_t id, const uint8_t *text) {
   char *field = nullptr;
@@ -67,11 +78,8 @@ void onMetadata(uint8_t id, const uint8_t *text) {
 
 void startAudioOutput() {
 #if AUDIO_BACKEND == AUDIO_BACKEND_I2S
-  auto cfg = audioOut.defaultConfig(TX_MODE);
-  cfg.pin_bck = PIN_I2S_BCK;
-  cfg.pin_ws = PIN_I2S_WS;
-  cfg.pin_data = PIN_I2S_DATA;
-  audioOut.begin(cfg);
+  audioOut.begin();
+  a2dp.set_sample_rate_callback(onSampleRate);
 #endif
 }
 
