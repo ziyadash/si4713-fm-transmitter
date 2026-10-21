@@ -127,11 +127,14 @@ void cmdTone(Args a) {
     uint8_t atten = a[2] ? atoi(a[2]) : 3;
     if (testToneStart(hz, atten)) Serial.printf("DAC sine on GPIO25/26: %u Hz, atten code %u\n", (unsigned)hz, atten);
     else Serial.println("tone start failed");
+  } else if (!strcmp(mode, "i2s")) {
+    if (testToneStartI2s(hz)) Serial.printf("I2S sine on BCK%d WS%d DATA%d: %u Hz\n", PIN_I2S_BCK, PIN_I2S_WS, PIN_I2S_DATA, (unsigned)hz);
+    else Serial.println("tone start failed");
   } else if (!strcmp(mode, "pwm")) {
     if (testToneStartPwm(hz)) Serial.printf("PWM square on GPIO%d/GPIO%d: %u Hz\n", PIN_TONE_L, PIN_TONE_R, (unsigned)hz);
     else Serial.println("tone start failed");
   } else {
-    Serial.println("usage: tone <on|pwm|off> [Hz] [0-3]");
+    Serial.println("usage: tone <on|pwm|i2s|off> [Hz] [0-3]");
   }
 }
 
@@ -157,7 +160,7 @@ const Command commands[] = {
     {"scan", "scan", "noise scan, lists the quietest channels", 0, true, cmdScan},
     {"asq", "asq", "one audio-signal-quality reading", 0, true, cmdAsq},
     {"watch", "watch", "ASQ once a second, any key stops", 0, true, cmdWatch},
-    {"tone", "tone <on|pwm|off> [Hz] [0-3]", "on = DAC sine GPIO25/26 (0-3 = 0/6/12/18 dB down); pwm = square on GPIO18/23", 1, false, cmdTone},
+    {"tone", "tone <on|pwm|i2s|off> [Hz] [0-3]", "on = DAC sine GPIO25/26 (0-3 = 0/6/12/18 dB down); pwm = square on GPIO18/23; i2s = sine on the I2S pins", 1, false, cmdTone},
     {"pre", "pre <50|75>", "pre-emphasis in us", 1, true, cmdPre},
     {"stereo", "stereo <on|off>", "stereo or mono (off) transmission", 1, true, cmdStereo},
     {"lim", "lim <on|off>", "audio limiter", 1, true, cmdLim},

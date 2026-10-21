@@ -13,4 +13,8 @@ bool testToneStart(uint32_t hz, uint8_t attenCode);
 // than the sine, but usable on any GPIO. Level is set by the series resistors.
 bool testToneStartPwm(uint32_t hz);
 
+// Sine on the I2S pins from config.h (BCK, WS, DATA), for checking the DAC wiring with no
+// Bluetooth involved. Quiet on purpose (about -20 dBFS).
+bool testToneStartI2s(uint32_t hz);
+
 void testToneStop();
