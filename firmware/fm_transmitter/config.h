@@ -19,7 +19,7 @@
 
 // 0 = mono (a mono receiver gains range: no stereo pilot or difference channel to add hiss),
 // 1 = stereo. RDS stays on either way, though some receivers want the pilot to decode it.
-#define FM_STEREO         1
+#define FM_STEREO         0
 
 // Pre-emphasis: Australia uses 50 us. The chip defaults to the US 75 us.
 #define FM_PREEMPHASIS_50US 1
@@ -40,7 +40,7 @@
 // Audio
 #define AUDIO_BACKEND_INTERNAL_DAC 0   // GPIO25/26 8-bit DAC -> LIN/RIN via attenuator
 #define AUDIO_BACKEND_I2S          1   // PCM5102A I2S DAC -> Si4713 3.5mm jack
-#define AUDIO_BACKEND AUDIO_BACKEND_INTERNAL_DAC
+#define AUDIO_BACKEND AUDIO_BACKEND_I2S
 
 // Fixed digital level for the A2DP stream, ignoring the phone's volume slider so
 // the FM level doesn't swing with it (4096 = unchanged, lower = quieter). With the
@@ -51,10 +51,10 @@
 #define BT_DEVICE_NAME    "FM Transmitter"
 
 // Pins
-// ESP32-A2DP v1.8.x defaults to BCK14/WS15/DATA22, so set these explicitly.
-#define PIN_I2S_BCK       26
+// ESP32-A2DP v1.8.x defaults to BCK14/WS15/DATA22, so set these explicitly (BCK 27, WS 25, DATA 26).
+#define PIN_I2S_BCK       27
 #define PIN_I2S_WS        25
-#define PIN_I2S_DATA      22
+#define PIN_I2S_DATA      26
 // (Internal DAC pins are fixed by the chip: DAC1 = GPIO25, DAC2 = GPIO26.)
 
 #define PIN_I2C_SDA       21
